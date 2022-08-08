@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1062912859500",
+    "project_id": "makemerich-dec84",
+    "storage_bucket": "makemerich-dec84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062912859500:android:b70745e4f16a96f6d0e749",
+        "android_client_info": {
+          "package_name": "com.azsolcsak.make_me_rich"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1062912859500-hdafi5edrhl45ci5ettlob689sj8fjuj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmyF7OkVQMbMb7UhEo04FHsrAy1nHN-w8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1062912859500-hdafi5edrhl45ci5ettlob689sj8fjuj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1062912859500-kcam0ofrqligjgkk629rp7mrf3uprv1j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.azsolcsak.makeMeRich"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
