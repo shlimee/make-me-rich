@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart'
-    show FirebaseAuth, GoogleAuthProvider, UserCredential;
+    show FirebaseAuth, GoogleAuthProvider, User, UserCredential;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -12,15 +12,17 @@ import 'package:make_me_rich/states.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:make_me_rich/user.dart';
 
 import 'ad_helper.dart';
 
 class AppBloc extends Bloc<AppEvent, MyAppState> {
   RewardedAd? _rewardedAd;
   final db = FirebaseFirestore.instance;
+  User? user;
 
   AppBloc()
-      : super(const PendingAppState(
+      : super(PendingAppState(
             isLoading: false, tapeEventWatched: 1 - 1, adWatchedCount: 1 - 1)) {
     on<LoginEvent>((event, emit) async {
       final userCredentials = await signInWithGoogle();
@@ -31,32 +33,66 @@ class AppBloc extends Bloc<AppEvent, MyAppState> {
       }
     });
     on<LoginSuccessfulEvent>((event, emit) async {
-      debugPrint('Login successful!');
-      debugPrint(event.credential.user?.displayName);
+      var user = event.credential.user;
+      var snapshot = await db.collection('userData').doc(user!.uid).get();
+      state.adWatchedCount = snapshot.data()!['impressions'] as int;
       emit(PendingAppState(
           isLoading: false,
           adWatchedCount: state.adWatchedCount,
           tapeEventWatched: state.tapeEventWatched,
-          user: event.credential));
+          user: event.credential.user));
     });
     on<LoginFailedEvent>((event, emit) async {
       debugPrint('Login failed!');
+    });
+    on<SignOutEvent>((event, emit) async {
+      await FirebaseAuth.instance.signOut();
+      emit(PendingAppState(
+          isLoading: false,
+          adWatchedCount: 1,
+          tapeEventWatched: 1,
+          user: null));
     });
     on<AdCreatedEvent>((event, emit) async {});
     on<AdClickedEvent>((event, emit) async {});
     on<AdWatchedEvent>((event, emit) async {
       debugPrint('Ad impression done!');
-
       int newAdWatchedCount = state.adWatchedCount + 1;
-      debugPrint(state.adWatchedCount.toString());
+      debugPrint("User is null : ${state.user == null}");
+      if (state.user != null) {
+        var snapshot =
+            await db.collection('userData').doc(state.user!.uid).get();
+        debugPrint(snapshot.data()?['impressions'].toString());
+
+        db
+            .collection('userData')
+            .doc(state.user!.uid)
+            .set({'impressions': (snapshot.data()?['impressions'] as int) + 1});
+      }
       emit(AdWatchedAppState(
           isLoading: false,
           adWatchedCount: newAdWatchedCount,
-          tapeEventWatched: state.tapeEventWatched));
+          tapeEventWatched: state.tapeEventWatched,
+          user: state.user));
       debugPrint(state.adWatchedCount.toString());
     });
     on<AdWatchingEvent>((event, emit) async {
       await _loadRewardedAd();
+    });
+  }
+
+  Future<void> loadUserData() async {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+
+        state.user = user;
+        var snapshot =
+            await db.collection('userData').doc(state.user!.uid).get();
+        state.adWatchedCount = snapshot.data()!['impressions'] as int;
+      }
     });
   }
 

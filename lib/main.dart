@@ -17,14 +17,6 @@ Future<void> main() async {
   );
   runApp(const MyApp());
 
-  FirebaseAuth.instance.authStateChanges().listen((User? user) {
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      print('User is signed in!');
-    }
-  });
-
   FirebaseAuth.instance.idTokenChanges().listen((User? user) {
     if (user == null) {
       print('User is currently signed out!');

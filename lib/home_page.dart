@@ -20,6 +20,8 @@ class _HomePageState extends State<HomePage> {
 
   BannerAd? _bannerAd;
 
+  int _currentPageIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -52,107 +54,129 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Make me Rich!')),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {}, child: const Icon(Icons.add)),
-        body: BlocConsumer<AppBloc, MyAppState>(
-            listener: (context, appState) {},
-            builder: (context, appState) {
-              return Center(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 15,
+      appBar: AppBar(title: const Text('Make me Rich!')),
+      floatingActionButton:
+          FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
+      body: BlocConsumer<AppBloc, MyAppState>(
+          listener: (context, appState) {},
+          builder: (context, appState) {
+            return Center(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  if (appState.user == null)
+                    OutlinedButton(
+                        onPressed: () {
+                          _bloc.add(LoginEvent());
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.g_mobiledata),
+                            Text(
+                              'Log in with Google',
+                              style: TextStyle(fontSize: 19),
+                            ),
+                          ],
+                        )),
+                  if (appState.user != null)
+                    Text(
+                      "Welcome ${appState.user?.displayName?.split(' ')[1]}!",
+                      style: Styles.h4,
                     ),
-                    if (appState.user == null)
-                      OutlinedButton(
-                          onPressed: () {
-                            _bloc.add(LoginEvent());
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.g_mobiledata),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  Opacity(
+                    opacity: appState.user != null ? 1 : 0.3,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(children: [
+                              Center(child: Text('Ads impressions')),
                               Text(
-                                'Log in with Google',
-                                style: TextStyle(fontSize: 19),
+                                appState.adWatchedCount.toString(),
+                                style: Styles.h2,
+                              )
+                            ]),
+                            Column(children: const [
+                              Center(child: Text('Your rank')),
+                              Text(
+                                '#12',
+                                style: Styles.h2,
                               ),
-                            ],
-                          )),
-                    if (appState.user != null)
-                      Text(
-                        "Welcome ${appState.user?.user?.displayName?.split(' ')[1]}!",
-                        style: Styles.h4,
-                      ),
-                    const SizedBox(
-                      height: 25,
+                            ]),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(children: [
+                              Center(child: Text('You made me\napproximately')),
+                              Text(
+                                '\$${AdHelper.convertAdImpressionToRevenue(appState.adWatchedCount)}',
+                                style: Styles.h1,
+                              ),
+                            ]),
+                          ],
+                        ),
+                      ],
                     ),
-                    Opacity(
-                      opacity: appState.user != null ? 1 : 0.3,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Column(children: [
-                                Center(child: Text('Ads impressions')),
-                                Text(
-                                  appState.adWatchedCount.toString(),
-                                  style: Styles.h2,
-                                )
-                              ]),
-                              Column(children: const [
-                                Center(child: Text('Your rank')),
-                                Text(
-                                  '#12',
-                                  style: Styles.h2,
-                                ),
-                              ]),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(children: [
-                                Center(
-                                    child: Text('You made me\napproximately')),
-                                Text(
-                                  '\$${AdHelper.convertAdImpressionToRevenue(appState.adWatchedCount)}',
-                                  style: Styles.h1,
-                                ),
-                              ]),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 55),
+                  ),
+                  const SizedBox(height: 55),
+                  OutlinedButton(
+                    onPressed: () {
+                      _bloc.add(AdWatchingEvent());
+                    },
+                    child: Text('Watch ad'),
+                    style: OutlinedButton.styleFrom(
+                        minimumSize: Size.fromHeight(44)),
+                  ),
+                  if (appState.user != null)
                     OutlinedButton(
                       onPressed: () {
-                        _bloc.add(AdWatchingEvent());
+                        _bloc.add(SignOutEvent());
                       },
-                      child: Text('Watch ad'),
+                      child: const Text('Sign out'),
                       style: OutlinedButton.styleFrom(
-                          minimumSize: Size.fromHeight(44)),
+                          minimumSize: const Size.fromHeight(44)),
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    if (_bannerAd != null)
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
-                        ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  if (_bannerAd != null)
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        width: _bannerAd!.size.width.toDouble(),
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
                       ),
-                  ],
-                ),
-              );
-            }));
+                    ),
+                ],
+              ),
+            );
+          }),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_box_rounded), label: 'Profile'),
+        ],
+        onTap: (ind) {
+          setState(() {
+            _currentPageIndex = ind;
+          });
+        },
+        currentIndex: _currentPageIndex,
+      ),
+    );
   }
 }

@@ -29,3 +29,6 @@ class LoginSuccessfulEvent extends AppEvent {
 
 @immutable
 class LoginFailedEvent extends AppEvent {}
+
+@immutable
+class SignOutEvent extends AppEvent {}

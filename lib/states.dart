@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 @immutable
 class MyAppState {
   final bool isLoading;
-  final int adWatchedCount;
+  late int adWatchedCount;
   final int tapeEventWatched;
-  final UserCredential? user;
-  const MyAppState({
+  late User? user;
+  MyAppState({
     required this.isLoading,
     this.adWatchedCount = 1 - 1,
     this.tapeEventWatched = 1 - 1,
@@ -17,7 +17,7 @@ class MyAppState {
 
 @immutable
 class PendingAppState extends MyAppState {
-  const PendingAppState({
+  PendingAppState({
     required super.isLoading,
     required super.adWatchedCount,
     required super.tapeEventWatched,
@@ -27,18 +27,20 @@ class PendingAppState extends MyAppState {
 
 @immutable
 class AdWatchingAppState extends MyAppState {
-  const AdWatchingAppState({
+  AdWatchingAppState({
     required super.isLoading,
     required super.adWatchedCount,
     required super.tapeEventWatched,
+    super.user,
   });
 }
 
 @immutable
 class AdWatchedAppState extends MyAppState {
-  const AdWatchedAppState({
+  AdWatchedAppState({
     required super.isLoading,
     required super.adWatchedCount,
     required super.tapeEventWatched,
+    super.user,
   });
 }
