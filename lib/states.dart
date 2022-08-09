@@ -9,8 +9,8 @@ class MyAppState {
   late User? user;
   MyAppState({
     required this.isLoading,
-    this.adWatchedCount = 1 - 1,
-    this.tapeEventWatched = 1 - 1,
+    this.adWatchedCount = 0,
+    this.tapeEventWatched = 0,
     this.user,
   });
 }

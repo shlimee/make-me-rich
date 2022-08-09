@@ -25,6 +25,10 @@ class AppBloc extends Bloc<AppEvent, MyAppState> {
       : super(PendingAppState(
             isLoading: false, tapeEventWatched: 1 - 1, adWatchedCount: 1 - 1)) {
     on<LoginEvent>((event, emit) async {
+      emit(PendingAppState(
+          isLoading: true,
+          adWatchedCount: state.adWatchedCount,
+          tapeEventWatched: state.tapeEventWatched));
       final userCredentials = await signInWithGoogle();
       if (userCredentials != null) {
         add(LoginSuccessfulEvent(credential: userCredentials));

@@ -9,4 +9,7 @@ class Styles {
       TextStyle(fontSize: 21, fontWeight: FontWeight.w700);
   static const TextStyle h4 =
       TextStyle(fontSize: 17, fontWeight: FontWeight.w600);
+
+  static const TextStyle p =
+      TextStyle(fontSize: 15, fontWeight: FontWeight.w300);
 }
